@@ -10,27 +10,29 @@ import { stripeWebhooks } from './controllers/webhooks.js'
 
 const app = express()
 
-connectDB();
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// Define PORT first
+const PORT = process.env.PORT || 3000
 
-//Stripe Webhooks
+// Connect DB
+connectDB()
+
+// Stripe Webhook (must be before express.json())
 app.post('/api/stripe', express.raw({ type: 'application/json' }), stripeWebhooks)
 
-//Middleware
+// Middleware
 app.use(cors())
 app.use(express.json())
 
-//Routes
+// Routes
 app.get('/', (req, res) => res.send('Server is Live!'))
 app.use('/api/user', userRouter)
 app.use('/api/chat', chatRouter)
 app.use('/api/message', messageRouter)
 app.use('/api/credit', creditRouter)
 
-const PORT = process.env.PORT || 3000
-
+// Listen only once
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
 })
+
+export default app
